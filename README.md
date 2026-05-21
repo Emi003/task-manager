@@ -60,4 +60,7 @@ npm start              # Corre en http://localhost:3000
 | DELETE | /api/tasks/:id | Eliminar tarea | Sí |
 
 ## Screenshots
-> *(Agrega capturas aquí cuando tengas el frontend listo)*
+<img width="959" height="479" alt="image" src="https://github.com/user-attachments/assets/1215abde-df07-4957-bf9a-85d638150aeb" />
+<img width="959" height="476" alt="image" src="https://github.com/user-attachments/assets/245d9094-ac38-4630-9afb-9f7226a93c3e" />
+
+
