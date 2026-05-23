@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
 const taskRoutes = require('./routes/tasks');
+const habitRoutes = require('./routes/habits');
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 // Rutas
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use('/api/habits', habitRoutes);
 
 // Health check
 app.get('/', (req, res) => res.json({ status: 'API corriendo OK' }));

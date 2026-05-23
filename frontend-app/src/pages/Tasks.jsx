@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getTasks, createTask, updateTask, deleteTask } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import Layout from './Layout';
 import './Tasks.css';
 
 const STATUSES = { pending: 'Pendiente', in_progress: 'En progreso', done: 'Listo' };
 const PRIORITIES = { low: 'Baja', medium: 'Media', high: 'Alta' };
 const PRIORITY_COLOR = { low: '#4a9eff', medium: '#f39c12', high: '#ff4757' };
-
 const emptyForm = { title: '', description: '', priority: 'medium', due_date: '', status: 'pending' };
 
 export default function Tasks() {
@@ -17,7 +17,7 @@ export default function Tasks() {
   const [showForm, setShowForm] = useState(false);
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => { fetchTasks(); }, []);
@@ -30,8 +30,6 @@ export default function Tasks() {
     finally { setLoading(false); }
   };
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -42,22 +40,13 @@ export default function Tasks() {
         const res = await createTask(form);
         setTasks([res.data, ...tasks]);
       }
-      setForm(emptyForm);
-      setEditingId(null);
-      setShowForm(false);
+      setForm(emptyForm); setEditingId(null); setShowForm(false);
     } catch (err) { alert(err.response?.data?.message || 'Error'); }
   };
 
   const handleEdit = (task) => {
-    setForm({
-      title: task.title,
-      description: task.description || '',
-      priority: task.priority,
-      due_date: task.due_date ? task.due_date.split('T')[0] : '',
-      status: task.status,
-    });
-    setEditingId(task.id);
-    setShowForm(true);
+    setForm({ title: task.title, description: task.description || '', priority: task.priority, due_date: task.due_date ? task.due_date.split('T')[0] : '', status: task.status });
+    setEditingId(task.id); setShowForm(true);
   };
 
   const handleDelete = async (id) => {
@@ -73,7 +62,6 @@ export default function Tasks() {
   };
 
   const filtered = filter === 'all' ? tasks : tasks.filter(t => t.status === filter);
-
   const counts = {
     all: tasks.length,
     pending: tasks.filter(t => t.status === 'pending').length,
@@ -82,126 +70,89 @@ export default function Tasks() {
   };
 
   return (
-    <div className="tasks-layout">
-      {/* Sidebar */}
-      <aside className="sidebar">
-        <div className="sidebar-brand">TASKR</div>
-        <div className="sidebar-user">
-          <div className="user-avatar">{user?.name?.[0]?.toUpperCase()}</div>
-          <div>
-            <div className="user-name">{user?.name}</div>
-            <div className="user-email">{user?.email}</div>
-          </div>
+    <Layout>
+      <div className="section-header">
+        <div>
+          <h1 className="section-title">Tareas</h1>
+          <p className="section-sub">{filtered.length} tarea{filtered.length !== 1 ? 's' : ''}</p>
         </div>
-
-        <nav className="sidebar-nav">
-          {['all', 'pending', 'in_progress', 'done'].map(s => (
-            <button key={s} className={`nav-item ${filter === s ? 'active' : ''}`} onClick={() => setFilter(s)}>
-              <span className="nav-label">{s === 'all' ? 'Todas' : STATUSES[s]}</span>
-              <span className="nav-count">{counts[s]}</span>
-            </button>
-          ))}
-        </nav>
-
-        <button className="btn-ghost logout-btn" onClick={() => { logout(); navigate('/login'); }}>
-          Cerrar sesión
+        <button className="btn-primary" onClick={() => { setForm(emptyForm); setEditingId(null); setShowForm(true); }}>
+          + Nueva tarea
         </button>
+      </div>
 
-        <div className="sidebar-signature">
-          <span className="sig-line">crafted by</span>
-          <span className="sig-name">Emiliano M.</span>
-          <span className="sig-line">© 2025</span>
-        </div>
-      </aside>
-
-      {/* Main */}
-      <main className="tasks-main">
-        <div className="tasks-header">
-          <div>
-            <h1 className="tasks-title">{filter === 'all' ? 'Todas las tareas' : STATUSES[filter]}</h1>
-            <p className="tasks-count">{filtered.length} tarea{filtered.length !== 1 ? 's' : ''}</p>
-          </div>
-          <button className="btn-primary" onClick={() => { setForm(emptyForm); setEditingId(null); setShowForm(true); }}>
-            + Nueva tarea
+      {/* Filtros */}
+      <div className="filter-bar">
+        {['all', 'pending', 'in_progress', 'done'].map(s => (
+          <button key={s} className={`filter-btn ${filter === s ? 'active' : ''}`} onClick={() => setFilter(s)}>
+            {s === 'all' ? 'Todas' : STATUSES[s]}
+            <span className="filter-count">{counts[s]}</span>
           </button>
+        ))}
+      </div>
+
+      {/* Modal */}
+      {showForm && (
+        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setShowForm(false)}>
+          <div className="modal">
+            <h2 className="modal-title">{editingId ? 'Editar tarea' : 'Nueva tarea'}</h2>
+            <form onSubmit={handleSubmit} className="item-form">
+              <div className="field"><label>Título *</label>
+                <input name="title" value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} placeholder="¿Qué hay que hacer?" required />
+              </div>
+              <div className="field"><label>Descripción</label>
+                <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} placeholder="Detalles opcionales..." rows={3} />
+              </div>
+              <div className="form-row">
+                <div className="field"><label>Prioridad</label>
+                  <select value={form.priority} onChange={(e) => setForm({...form, priority: e.target.value})}>
+                    <option value="low">Baja</option>
+                    <option value="medium">Media</option>
+                    <option value="high">Alta</option>
+                  </select>
+                </div>
+                <div className="field"><label>Estado</label>
+                  <select value={form.status} onChange={(e) => setForm({...form, status: e.target.value})}>
+                    <option value="pending">Pendiente</option>
+                    <option value="in_progress">En progreso</option>
+                    <option value="done">Listo</option>
+                  </select>
+                </div>
+              </div>
+              <div className="field"><label>Fecha límite</label>
+                <input type="date" value={form.due_date} onChange={(e) => setForm({...form, due_date: e.target.value})} />
+              </div>
+              <div className="form-actions">
+                <button type="button" className="btn-ghost" onClick={() => setShowForm(false)}>Cancelar</button>
+                <button type="submit" className="btn-primary">{editingId ? 'Guardar cambios' : 'Crear tarea'}</button>
+              </div>
+            </form>
+          </div>
         </div>
+      )}
 
-        {/* Form modal */}
-        {showForm && (
-          <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setShowForm(false)}>
-            <div className="modal">
-              <h2 className="modal-title">{editingId ? 'Editar tarea' : 'Nueva tarea'}</h2>
-              <form onSubmit={handleSubmit} className="task-form">
-                <div className="field">
-                  <label>Título *</label>
-                  <input name="title" value={form.title} onChange={handleChange} placeholder="¿Qué hay que hacer?" required />
-                </div>
-                <div className="field">
-                  <label>Descripción</label>
-                  <textarea name="description" value={form.description} onChange={handleChange} placeholder="Detalles opcionales..." rows={3} />
-                </div>
-                <div className="form-row">
-                  <div className="field">
-                    <label>Prioridad</label>
-                    <select name="priority" value={form.priority} onChange={handleChange}>
-                      <option value="low">Baja</option>
-                      <option value="medium">Media</option>
-                      <option value="high">Alta</option>
-                    </select>
-                  </div>
-                  <div className="field">
-                    <label>Estado</label>
-                    <select name="status" value={form.status} onChange={handleChange}>
-                      <option value="pending">Pendiente</option>
-                      <option value="in_progress">En progreso</option>
-                      <option value="done">Listo</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="field">
-                  <label>Fecha límite</label>
-                  <input name="due_date" type="date" value={form.due_date} onChange={handleChange} />
-                </div>
-                <div className="form-actions">
-                  <button type="button" className="btn-ghost" onClick={() => setShowForm(false)}>Cancelar</button>
-                  <button type="submit" className="btn-primary">{editingId ? 'Guardar cambios' : 'Crear tarea'}</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* Task list */}
-        {loading ? (
-          <div className="empty-state">Cargando...</div>
-        ) : filtered.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon">○</div>
-            <p>No hay tareas aquí</p>
-          </div>
+      {/* Lista */}
+      {loading ? <div className="empty-state">Cargando...</div>
+        : filtered.length === 0 ? (
+          <div className="empty-state"><div className="empty-icon">○</div><p>No hay tareas aquí</p></div>
         ) : (
-          <div className="task-list">
+          <div className="item-list">
             {filtered.map(task => (
-              <div key={task.id} className={`task-card ${task.status === 'done' ? 'done' : ''}`}>
-                <div className="task-left">
-                  <button className="status-dot" style={{ '--dot-color': task.status === 'done' ? 'var(--done)' : task.status === 'in_progress' ? 'var(--progress)' : 'var(--border)' }} onClick={() => handleStatusToggle(task)} title="Cambiar estado" />
-                  <div className="task-body">
-                    <div className="task-title">{task.title}</div>
-                    {task.description && <div className="task-desc">{task.description}</div>}
-                    <div className="task-meta">
-                      <span className="priority-badge" style={{ color: PRIORITY_COLOR[task.priority] }}>
-                        ● {PRIORITIES[task.priority]}
-                      </span>
-                      <span className="status-badge">{STATUSES[task.status]}</span>
-                      {task.due_date && (
-                        <span className="due-date">
-                          📅 {new Date(task.due_date).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' })}
-                        </span>
-                      )}
+              <div key={task.id} className={`item-card ${task.status === 'done' ? 'done' : ''}`}>
+                <div className="item-left">
+                  <button className="status-dot" style={{ '--dot-color': task.status === 'done' ? 'var(--done)' : task.status === 'in_progress' ? 'var(--progress)' : 'var(--border)' }}
+                    onClick={() => handleStatusToggle(task)} />
+                  <div className="item-body">
+                    <div className="item-title">{task.title}</div>
+                    {task.description && <div className="item-desc">{task.description}</div>}
+                    <div className="item-meta">
+                      <span style={{ fontSize: 11, color: PRIORITY_COLOR[task.priority] }}>● {PRIORITIES[task.priority]}</span>
+                      <span style={{ fontSize: 11, color: 'var(--text3)' }}>{STATUSES[task.status]}</span>
+                      {task.due_date && <span style={{ fontSize: 11, color: 'var(--text3)' }}>📅 {new Date(task.due_date).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' })}</span>}
                     </div>
                   </div>
                 </div>
-                <div className="task-actions">
+                <div className="item-actions">
                   <button className="btn-ghost" style={{ padding: '6px 12px', fontSize: '12px' }} onClick={() => handleEdit(task)}>Editar</button>
                   <button className="btn-danger" onClick={() => handleDelete(task.id)}>Eliminar</button>
                 </div>
@@ -209,7 +160,6 @@ export default function Tasks() {
             ))}
           </div>
         )}
-      </main>
-    </div>
+    </Layout>
   );
 }

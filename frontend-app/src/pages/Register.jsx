@@ -11,21 +11,16 @@ export default function Register() {
   const { saveAuth } = useAuth();
   const navigate = useNavigate();
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
+    setError(''); setLoading(true);
     try {
       const res = await register(form);
       saveAuth(res.data.token, res.data.user);
       navigate('/tasks');
     } catch (err) {
       setError(err.response?.data?.message || 'Error al registrarse');
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   return (
@@ -33,28 +28,25 @@ export default function Register() {
       <div className="auth-card">
         <div className="auth-brand">TASKR</div>
         <h1 className="auth-title">Crear cuenta</h1>
-        <p className="auth-sub">Empieza a organizar tus tareas hoy</p>
-
+        <p className="auth-sub">Organiza tus tareas y hábitos</p>
         {error && <div className="auth-error">{error}</div>}
-
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="field">
             <label>Nombre</label>
-            <input name="name" type="text" value={form.name} onChange={handleChange} placeholder="Tu nombre" required />
+            <input name="name" type="text" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="Tu nombre" required />
           </div>
           <div className="field">
             <label>Email</label>
-            <input name="email" type="email" value={form.email} onChange={handleChange} placeholder="tu@email.com" required />
+            <input name="email" type="email" value={form.email} onChange={(e) => setForm({...form, email: e.target.value})} placeholder="tu@email.com" required />
           </div>
           <div className="field">
             <label>Contraseña</label>
-            <input name="password" type="password" value={form.password} onChange={handleChange} placeholder="Mínimo 6 caracteres" minLength={6} required />
+            <input name="password" type="password" value={form.password} onChange={(e) => setForm({...form, password: e.target.value})} placeholder="Mínimo 6 caracteres" minLength={6} required />
           </div>
           <button className="btn-primary" type="submit" style={{ width: '100%' }} disabled={loading}>
             {loading ? 'Creando cuenta...' : 'Crear cuenta →'}
           </button>
         </form>
-
         <p className="auth-footer">¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link></p>
       </div>
     </div>
