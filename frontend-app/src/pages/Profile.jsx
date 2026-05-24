@@ -6,7 +6,8 @@ import './Profile.css';
 
 const api = async (method, path, data) => {
   const token = localStorage.getItem('token');
-  const res = await fetch(`http://localhost:3001/api${path}`, {
+  const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+  const res = await fetch(`${baseURL}${path}`, {
     method,
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: data ? JSON.stringify(data) : undefined,

@@ -6,6 +6,7 @@ const authRoutes = require('./routes/auth');
 const taskRoutes = require('./routes/tasks');
 const habitRoutes = require('./routes/habits');
 const linkRoutes = require('./routes/links');
+const profileRoutes = require('./routes/profile');
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/habits', habitRoutes);
 app.use('/api/links', linkRoutes);
+app.use('/api/profile', profileRoutes);
 
 // Health check
 app.get('/', (req, res) => res.json({ status: 'API corriendo OK' }));
