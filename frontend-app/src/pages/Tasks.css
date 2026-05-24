@@ -92,3 +92,15 @@ textarea { resize: vertical; }
 
 .empty-state { text-align: center; padding: 80px 20px; color: var(--text3); font-size: 14px; }
 .empty-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.3; }
+
+/* ── Responsive móvil ── */
+@media (max-width: 768px) {
+  .section-header { flex-direction: column; gap: 12px; align-items: flex-start; }
+  .section-header .btn-primary { width: 100%; text-align: center; }
+  .filter-bar { gap: 6px; }
+  .filter-btn { padding: 6px 10px; font-size: 11px; }
+  .modal { padding: 24px 18px; margin: 0 8px; }
+  .form-row { grid-template-columns: 1fr; }
+  .item-card { flex-direction: column; gap: 12px; }
+  .item-actions { width: 100%; justify-content: flex-end; }
+}

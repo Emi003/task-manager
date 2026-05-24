@@ -5,105 +5,73 @@
   position: fixed;
   inset: 0;
   z-index: 0;
-  overflow: hidden;
   pointer-events: none;
   background: #0d0d0d;
-}
-
-/* Sol verde */
-.sw-sun {
-  position: absolute;
-  left: 50%;
-  bottom: 28%;
-  transform: translateX(-50%);
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 60%,
-    #a8ff6a 0%,
-    #4a7c3f 35%,
-    #1a3a10 65%,
-    transparent 100%
-  );
-  box-shadow:
-    0 0 60px rgba(74,124,63,0.8),
-    0 0 120px rgba(74,124,63,0.4),
-    0 0 200px rgba(74,124,63,0.2);
-  filter: blur(1px);
-}
-
-/* Líneas horizontales del sol */
-.sw-sun-lines {
-  position: absolute;
-  left: 50%;
-  bottom: 28%;
-  transform: translateX(-50%);
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
   overflow: hidden;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0px,
-    transparent 10px,
-    rgba(10, 20, 8, 0.55) 10px,
-    rgba(10, 20, 8, 0.55) 13px
-  );
 }
 
-/* Montañas silueta */
-.sw-mountains {
+.sw-bg-svg {
   position: absolute;
-  bottom: 26%;
-  left: 0; right: 0;
-  height: 200px;
-  background:
-    /* pico izquierdo grande */
-    radial-gradient(ellipse 180px 220px at 15% 100%, #0d0d0d 60%, transparent 100%),
-    /* pico izquierdo chico */
-    radial-gradient(ellipse 120px 160px at 28% 100%, #0d0d0d 60%, transparent 100%),
-    /* pico centro-izq */
-    radial-gradient(ellipse 140px 200px at 40% 100%, #0d0d0d 60%, transparent 100%),
-    /* pico derecho chico */
-    radial-gradient(ellipse 130px 170px at 62% 100%, #0d0d0d 60%, transparent 100%),
-    /* pico derecho grande */
-    radial-gradient(ellipse 200px 240px at 80% 100%, #0d0d0d 60%, transparent 100%),
-    /* pico extremo derecho */
-    radial-gradient(ellipse 120px 150px at 95% 100%, #0d0d0d 60%, transparent 100%);
-  filter: blur(0.5px);
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
-/* Grid de piso */
-.sw-grid {
-  position: absolute;
-  bottom: 0;
-  left: 0; right: 0;
-  height: 30%;
-  background-image:
-    linear-gradient(rgba(74,124,63,0.35) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(74,124,63,0.35) 1px, transparent 1px);
-  background-size: 50px 50px;
-  transform: perspective(300px) rotateX(60deg);
-  transform-origin: bottom center;
+/* ── Mobile topbar ── */
+.mobile-topbar {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  background: rgba(14,14,14,0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(74,124,63,0.2);
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 20;
 }
 
-/* Niebla que conecta montañas con grid */
-.sw-fog {
-  position: absolute;
-  bottom: 24%;
-  left: 0; right: 0;
-  height: 80px;
-  background: linear-gradient(to bottom,
-    transparent 0%,
-    rgba(13,13,13,0.5) 40%,
-    #0d0d0d 100%
-  );
+.mobile-brand {
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: var(--accent);
+  text-shadow: 0 0 20px rgba(74,124,63,0.8);
+}
+
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+}
+.hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text2);
+  border-radius: 2px;
+}
+
+.user-avatar.small { width: 30px; height: 30px; font-size: 12px; }
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 15;
 }
 
 /* ── Sidebar ── */
 .sidebar {
   width: 220px;
-  background: rgba(14,14,14,0.92);
+  background: rgba(14,14,14,0.95);
   backdrop-filter: blur(16px);
   border-right: 1px solid rgba(74,124,63,0.2);
   padding: 28px 18px;
@@ -112,7 +80,8 @@
   gap: 22px;
   position: fixed;
   top: 0; left: 0; bottom: 0;
-  z-index: 10;
+  z-index: 16;
+  transition: transform 0.3s ease;
 }
 
 .sidebar-brand {
@@ -144,20 +113,15 @@
 .user-email { font-size: 11px; color: var(--text3); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .sidebar-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
-
 .nav-section-label { font-size: 10px; letter-spacing: 2px; color: var(--text3); margin-bottom: 6px; padding-left: 10px; }
 
 .nav-item {
   display: flex; align-items: center; gap: 10px;
-  padding: 9px 10px;
-  border-radius: var(--radius);
-  background: transparent;
-  color: var(--text2);
-  font-family: var(--font-mono);
-  font-size: 12px;
+  padding: 9px 10px; border-radius: var(--radius);
+  background: transparent; color: var(--text2);
+  font-family: var(--font-mono); font-size: 12px;
   border: 1px solid transparent;
-  text-align: left; width: 100%;
-  transition: all 0.15s;
+  text-align: left; width: 100%; transition: all 0.15s;
 }
 .nav-item:hover { background: rgba(74,124,63,0.08); color: var(--text); }
 .nav-item.active { background: rgba(74,124,63,0.12); color: var(--text); border-color: rgba(74,124,63,0.3); }
@@ -181,4 +145,13 @@
   max-width: 900px;
   position: relative;
   z-index: 1;
+}
+
+/* ── Responsive móvil ── */
+@media (max-width: 768px) {
+  .mobile-topbar { display: flex; }
+  .sidebar-overlay { display: block; }
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main-content { margin-left: 0; padding: 20px 16px; padding-top: 72px; max-width: 100%; }
 }
