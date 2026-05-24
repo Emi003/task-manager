@@ -90,7 +90,7 @@ textarea { resize: vertical; }
   text-decoration: none;
 }
 
-.empty-state { text-align: center; padding: 80px 20px; color: var(--text3); font-size: 14px; }
+.empty-state { text-align: center; padding: 80px 20px; color: var(--text); font-size: 14px; text-shadow: 0 0 20px #0d0d0d, 0 0 40px #0d0d0d; }
 .empty-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.3; }
 
 /* ── Responsive móvil ── */
