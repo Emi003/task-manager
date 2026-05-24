@@ -41,12 +41,12 @@ const getHabits = async (req, res) => {
 };
 
 const createHabit = async (req, res) => {
-  const { name, description, color, frequency } = req.body;
+  const { name, description, color, frequency, link } = req.body;
   if (!name) return res.status(400).json({ message: 'El nombre es requerido' });
   try {
     const [result] = await pool.query(
-      'INSERT INTO habits (user_id, name, description, color, frequency) VALUES (?, ?, ?, ?, ?)',
-      [req.user.id, name, description || null, color || '#4a7c3f', frequency || 'daily']
+      'INSERT INTO habits (user_id, name, description, color, frequency, link) VALUES (?, ?, ?, ?, ?, ?)',
+      [req.user.id, name, description || null, color || '#4a7c3f', frequency || 'daily', link || null]
     );
     const [newHabit] = await pool.query('SELECT * FROM habits WHERE id = ?', [result.insertId]);
     res.status(201).json({ ...newHabit[0], streak: 0, completedToday: false, totalCompletions: 0 });
@@ -57,14 +57,19 @@ const createHabit = async (req, res) => {
 };
 
 const updateHabit = async (req, res) => {
-  const { name, description, color, frequency } = req.body;
+  const { name, description, color, frequency, link } = req.body;
   try {
     const [existing] = await pool.query('SELECT id FROM habits WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);
     if (!existing.length) return res.status(404).json({ message: 'Hábito no encontrado' });
     await pool.query(
-      `UPDATE habits SET name = COALESCE(?, name), description = COALESCE(?, description),
-       color = COALESCE(?, color), frequency = COALESCE(?, frequency) WHERE id = ? AND user_id = ?`,
-      [name, description, color, frequency, req.params.id, req.user.id]
+      `UPDATE habits SET
+        name = COALESCE(?, name),
+        description = COALESCE(?, description),
+        color = COALESCE(?, color),
+        frequency = COALESCE(?, frequency),
+        link = COALESCE(?, link)
+      WHERE id = ? AND user_id = ?`,
+      [name, description, color, frequency, link, req.params.id, req.user.id]
     );
     const [updated] = await pool.query('SELECT * FROM habits WHERE id = ?', [req.params.id]);
     res.json(updated[0]);

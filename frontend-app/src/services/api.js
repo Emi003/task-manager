@@ -25,3 +25,8 @@ export const updateHabit   = (id, data) => api.put(`/habits/${id}`, data);
 export const deleteHabit   = (id)       => api.delete(`/habits/${id}`);
 export const toggleHabit   = (id)       => api.post(`/habits/${id}/toggle`);
 export const getHabitStats = (id)       => api.get(`/habits/${id}/stats`);
+
+// Links
+export const getLinks   = ()     => api.get('/links');
+export const createLink = (data) => api.post('/links', data);
+export const deleteLink = (id)   => api.delete(`/links/${id}`);

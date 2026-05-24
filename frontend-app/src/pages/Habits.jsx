@@ -7,7 +7,7 @@ import Layout from './Layout';
 import './Habits.css';
 
 const COLORS = ['#4a7c3f','#6aab5a','#3d6e8a','#c47c2b','#8a3d6e','#6e3d3d','#3d5a8a'];
-const emptyForm = { name: '', description: '', color: '#4a7c3f', frequency: 'daily' };
+const emptyForm = { name: '', description: '', color: '#4a7c3f', frequency: 'daily', link: '' };
 
 export default function Habits() {
   const [habits, setHabits] = useState([]);
@@ -50,14 +50,13 @@ export default function Habits() {
       setHabits(habits.map(h => {
         if (h.id !== habit.id) return h;
         const completedToday = res.data.completedToday;
-        const streak = completedToday ? h.streak + 1 : Math.max(0, h.streak - 1);
-        return { ...h, completedToday, streak };
+        return { ...h, completedToday, streak: completedToday ? h.streak + 1 : Math.max(0, h.streak - 1) };
       }));
     } catch { alert('Error al registrar hábito'); }
   };
 
   const handleEdit = (habit) => {
-    setForm({ name: habit.name, description: habit.description || '', color: habit.color, frequency: habit.frequency });
+    setForm({ name: habit.name, description: habit.description || '', color: habit.color, frequency: habit.frequency, link: habit.link || '' });
     setEditingId(habit.id); setShowForm(true);
   };
 
@@ -95,7 +94,6 @@ export default function Habits() {
         </button>
       </div>
 
-      {/* Barra de progreso */}
       {totalHabits > 0 && (
         <div className="progress-bar-wrap">
           <div className="progress-bar">
@@ -104,7 +102,6 @@ export default function Habits() {
         </div>
       )}
 
-      {/* Stats panel */}
       {selectedHabit && (
         <div className="stats-panel">
           <div className="stats-header">
@@ -116,21 +113,15 @@ export default function Habits() {
             <BarChart data={stats} barSize={28}>
               <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#888', fontSize: 11 }} />
               <YAxis hide />
-              <Tooltip
-                contentStyle={{ background: '#1c1c1c', border: '1px solid #2a2a2a', borderRadius: 8, fontSize: 12 }}
-                formatter={(v) => [v ? 'Completado ✓' : 'No completado', '']}
-              />
+              <Tooltip contentStyle={{ background: '#1c1c1c', border: '1px solid #2a2a2a', borderRadius: 8, fontSize: 12 }} formatter={(v) => [v ? 'Completado ✓' : 'No completado', '']} />
               <Bar dataKey="completado" radius={[6, 6, 0, 0]}>
-                {stats.map((entry, i) => (
-                  <Cell key={i} fill={entry.completado ? selectedHabit.color : '#2a2a2a'} />
-                ))}
+                {stats.map((entry, i) => <Cell key={i} fill={entry.completado ? selectedHabit.color : '#2a2a2a'} />)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
       )}
 
-      {/* Modal */}
       {showForm && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setShowForm(false)}>
           <div className="modal">
@@ -141,6 +132,9 @@ export default function Habits() {
               </div>
               <div className="field"><label>Descripción</label>
                 <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} placeholder="Opcional..." rows={2} />
+              </div>
+              <div className="field"><label>Link de referencia</label>
+                <input type="url" value={form.link} onChange={(e) => setForm({...form, link: e.target.value})} placeholder="https://... (opcional)" />
               </div>
               <div className="form-row">
                 <div className="field"><label>Frecuencia</label>
@@ -167,7 +161,6 @@ export default function Habits() {
         </div>
       )}
 
-      {/* Lista */}
       {loading ? <div className="empty-state">Cargando...</div>
         : habits.length === 0 ? (
           <div className="empty-state"><div className="empty-icon">○</div><p>No tienes hábitos aún</p></div>
@@ -185,6 +178,7 @@ export default function Habits() {
                     <span style={{ fontSize: 12, fontWeight: 500, color: habit.color }}>🔥 {habit.streak} día{habit.streak !== 1 ? 's' : ''} de racha</span>
                     <span style={{ fontSize: 11, color: 'var(--text3)' }}>{habit.totalCompletions} completados en total</span>
                     <span style={{ fontSize: 11, color: 'var(--text3)' }}>{habit.frequency === 'daily' ? 'Diario' : 'Semanal'}</span>
+                    {habit.link && <a href={habit.link} target="_blank" rel="noopener noreferrer" className="link-pill" onClick={(e) => e.stopPropagation()}>ver referencia ↗</a>}
                   </div>
                 </div>
                 <div className="item-actions">

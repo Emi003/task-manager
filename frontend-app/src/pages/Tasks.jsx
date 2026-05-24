@@ -8,7 +8,7 @@ import './Tasks.css';
 const STATUSES = { pending: 'Pendiente', in_progress: 'En progreso', done: 'Listo' };
 const PRIORITIES = { low: 'Baja', medium: 'Media', high: 'Alta' };
 const PRIORITY_COLOR = { low: '#4a9eff', medium: '#f39c12', high: '#ff4757' };
-const emptyForm = { title: '', description: '', priority: 'medium', due_date: '', status: 'pending' };
+const emptyForm = { title: '', description: '', priority: 'medium', due_date: '', status: 'pending', link: '' };
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
@@ -45,7 +45,14 @@ export default function Tasks() {
   };
 
   const handleEdit = (task) => {
-    setForm({ title: task.title, description: task.description || '', priority: task.priority, due_date: task.due_date ? task.due_date.split('T')[0] : '', status: task.status });
+    setForm({
+      title: task.title,
+      description: task.description || '',
+      priority: task.priority,
+      due_date: task.due_date ? task.due_date.split('T')[0] : '',
+      status: task.status,
+      link: task.link || ''
+    });
     setEditingId(task.id); setShowForm(true);
   };
 
@@ -81,7 +88,6 @@ export default function Tasks() {
         </button>
       </div>
 
-      {/* Filtros */}
       <div className="filter-bar">
         {['all', 'pending', 'in_progress', 'done'].map(s => (
           <button key={s} className={`filter-btn ${filter === s ? 'active' : ''}`} onClick={() => setFilter(s)}>
@@ -91,17 +97,19 @@ export default function Tasks() {
         ))}
       </div>
 
-      {/* Modal */}
       {showForm && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setShowForm(false)}>
           <div className="modal">
             <h2 className="modal-title">{editingId ? 'Editar tarea' : 'Nueva tarea'}</h2>
             <form onSubmit={handleSubmit} className="item-form">
               <div className="field"><label>Título *</label>
-                <input name="title" value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} placeholder="¿Qué hay que hacer?" required />
+                <input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} placeholder="¿Qué hay que hacer?" required />
               </div>
               <div className="field"><label>Descripción</label>
-                <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} placeholder="Detalles opcionales..." rows={3} />
+                <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} placeholder="Detalles opcionales..." rows={2} />
+              </div>
+              <div className="field"><label>Link de referencia</label>
+                <input type="url" value={form.link} onChange={(e) => setForm({...form, link: e.target.value})} placeholder="https://... (opcional)" />
               </div>
               <div className="form-row">
                 <div className="field"><label>Prioridad</label>
@@ -131,7 +139,6 @@ export default function Tasks() {
         </div>
       )}
 
-      {/* Lista */}
       {loading ? <div className="empty-state">Cargando...</div>
         : filtered.length === 0 ? (
           <div className="empty-state"><div className="empty-icon">○</div><p>No hay tareas aquí</p></div>
@@ -148,7 +155,8 @@ export default function Tasks() {
                     <div className="item-meta">
                       <span style={{ fontSize: 11, color: PRIORITY_COLOR[task.priority] }}>● {PRIORITIES[task.priority]}</span>
                       <span style={{ fontSize: 11, color: 'var(--text3)' }}>{STATUSES[task.status]}</span>
-                      {task.due_date && <span style={{ fontSize: 11, color: 'var(--text3)' }}>📅 {new Date(task.due_date).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' })}</span>}
+                      {task.due_date && <span style={{ fontSize: 11, color: 'var(--text3)' }}>{new Date(task.due_date).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' })}</span>}
+                      {task.link && <a href={task.link} target="_blank" rel="noopener noreferrer" className="link-pill">ver referencia ↗</a>}
                     </div>
                   </div>
                 </div>

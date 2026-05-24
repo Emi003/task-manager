@@ -30,14 +30,14 @@ const getTaskById = async (req, res) => {
 
 // POST /api/tasks
 const createTask = async (req, res) => {
-  const { title, description, priority, due_date } = req.body;
+  const { title, description, priority, due_date, link } = req.body;
 
   if (!title) return res.status(400).json({ message: 'El título es requerido' });
 
   try {
     const [result] = await pool.query(
-      'INSERT INTO tasks (user_id, title, description, priority, due_date) VALUES (?, ?, ?, ?, ?)',
-      [req.user.id, title, description || null, priority || 'medium', due_date || null]
+      'INSERT INTO tasks (user_id, title, description, priority, due_date, link) VALUES (?, ?, ?, ?, ?, ?)',
+      [req.user.id, title, description || null, priority || 'medium', due_date || null, link || null]
     );
     const [newTask] = await pool.query('SELECT * FROM tasks WHERE id = ?', [result.insertId]);
     res.status(201).json(newTask[0]);
@@ -49,7 +49,7 @@ const createTask = async (req, res) => {
 
 // PUT /api/tasks/:id
 const updateTask = async (req, res) => {
-  const { title, description, status, priority, due_date } = req.body;
+  const { title, description, status, priority, due_date, link } = req.body;
 
   try {
     const [existing] = await pool.query(
@@ -64,9 +64,10 @@ const updateTask = async (req, res) => {
         description = COALESCE(?, description),
         status = COALESCE(?, status),
         priority = COALESCE(?, priority),
-        due_date = COALESCE(?, due_date)
+        due_date = COALESCE(?, due_date),
+        link = COALESCE(?, link)
       WHERE id = ? AND user_id = ?`,
-      [title, description, status, priority, due_date, req.params.id, req.user.id]
+      [title, description, status, priority, due_date, link, req.params.id, req.user.id]
     );
 
     const [updated] = await pool.query('SELECT * FROM tasks WHERE id = ?', [req.params.id]);
