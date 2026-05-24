@@ -155,3 +155,33 @@
   .sidebar.open { transform: translateX(0); }
   .main-content { margin-left: 0; padding: 20px 16px; padding-top: 72px; max-width: 100%; }
 }
+
+/* ── Sidebar user button ── */
+.sidebar-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  padding: 8px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: all 0.15s;
+  margin: -8px;
+}
+.sidebar-user-btn:hover {
+  background: rgba(74,124,63,0.08);
+  border-color: rgba(74,124,63,0.2);
+}
+.sidebar-user-btn:hover .profile-hint { opacity: 1; }
+
+.profile-hint {
+  font-size: 14px;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}

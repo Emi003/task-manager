@@ -14,7 +14,6 @@ export default function Layout({ children }) {
 
   return (
     <div className="app-layout">
-      {/* SVG Synthwave background */}
       <div className="synthwave-bg" aria-hidden="true">
         <svg className="sw-bg-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -36,61 +35,51 @@ export default function Layout({ children }) {
               <stop offset="100%" stopColor="#0d0d0d" stopOpacity="0"/>
             </linearGradient>
           </defs>
-
-          {/* Halo glow */}
           <ellipse cx="720" cy="480" rx="280" ry="280" fill="url(#glowHalo)"/>
-
-          {/* Sun */}
           <circle cx="720" cy="480" r="140" fill="url(#sunGlow)"/>
-
-          {/* Sun horizontal lines */}
           <g clipPath="url(#sunClip)">
             {[...Array(18)].map((_, i) => (
               <rect key={i} x="580" y={352 + i * 16} width="280" height="8" fill="#0d0d0d" opacity="0.55"/>
             ))}
           </g>
-
-          {/* Mountains */}
           <polygon points="0,620 120,480 220,560 320,430 460,580 560,460 660,590 720,500 780,590 880,460 980,580 1120,430 1220,560 1320,480 1440,620 1440,900 0,900" fill="#0d0d0d"/>
-
-          {/* Grid lines horizontal */}
           {[0,1,2,3,4,5,6,7].map((i) => {
             const y = 650 + i * 35;
-            const vanishX = 720;
             const spread = 200 + i * 120;
-            return <line key={i} x1={vanishX - spread} y1={y} x2={vanishX + spread} y2={y} stroke="#4a7c3f" strokeOpacity="0.35" strokeWidth="1"/>
+            return <line key={i} x1={720 - spread} y1={y} x2={720 + spread} y2={y} stroke="#4a7c3f" strokeOpacity="0.35" strokeWidth="1"/>
           })}
-
-          {/* Grid lines vertical (converging) */}
           {[-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6].map((i) => (
             <line key={i} x1={720 + i * 20} y1={640} x2={720 + i * 140} y2={900} stroke="#4a7c3f" strokeOpacity="0.35" strokeWidth="1"/>
           ))}
-
-          {/* Ground fade */}
           <rect x="0" y="610" width="1440" height="80" fill="url(#groundFade)"/>
         </svg>
       </div>
 
-      {/* Mobile topbar */}
       <header className="mobile-topbar">
         <button className="hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>
           <span /><span /><span />
         </button>
         <div className="mobile-brand">TASKR</div>
-        <div className="user-avatar small">{user?.name?.[0]?.toUpperCase()}</div>
+        <button className="user-avatar small" onClick={() => handleNav('/profile')} title="Mi perfil">
+          {user?.name?.[0]?.toUpperCase()}
+        </button>
       </header>
 
       {sidebarOpen && <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />}
 
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-brand">TASKR</div>
-        <div className="sidebar-user">
+
+        {/* Avatar clickeable */}
+        <button className="sidebar-user-btn" onClick={() => handleNav('/profile')} title="Ver perfil">
           <div className="user-avatar">{user?.name?.[0]?.toUpperCase()}</div>
           <div className="user-info">
             <div className="user-name">{user?.name}</div>
             <div className="user-email">{emailUser}</div>
           </div>
-        </div>
+          <span className="profile-hint">→</span>
+        </button>
+
         <nav className="sidebar-nav">
           <div className="nav-section-label">SECCIONES</div>
           <button className={`nav-item ${location.pathname === '/tasks' ? 'active' : ''}`} onClick={() => handleNav('/tasks')}>
@@ -100,7 +89,9 @@ export default function Layout({ children }) {
             <span className="nav-icon">◈</span><span>Hábitos</span>
           </button>
         </nav>
+
         <button className="btn-ghost logout-btn" onClick={handleLogout}>Cerrar sesión</button>
+
         <div className="sidebar-signature">
           <span className="sig-line">crafted by</span>
           <span className="sig-name">Emiliano M.</span>

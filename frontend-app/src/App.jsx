@@ -4,7 +4,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Tasks from './pages/Tasks';
 import Habits from './pages/Habits';
-import Links from './pages/Links';
+import Profile from './pages/Profile';
 
 const PrivateRoute = ({ children }) => {
   const { user } = useAuth();
@@ -26,7 +26,7 @@ export default function App() {
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
           <Route path="/tasks"    element={<PrivateRoute><Tasks /></PrivateRoute>} />
           <Route path="/habits"   element={<PrivateRoute><Habits /></PrivateRoute>} />
-          <Route path="/links"    element={<PrivateRoute><Links /></PrivateRoute>} />
+          <Route path="/profile"  element={<PrivateRoute><Profile /></PrivateRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
